@@ -1,4 +1,4 @@
-# Java-Small-Projects
+# Java-JDBC-Project
 # Purpose:
 The application allows users to manage products by adding them to a database, displaying them in a table, and visualizing the quantity of each product using a pie chart.
 
