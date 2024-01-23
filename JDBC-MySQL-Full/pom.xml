@@ -7,7 +7,7 @@
     <groupId>com.example</groupId>
     <artifactId>JDBC-MySQL-Full</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>JDBC-MySQL-Full</name>
+    <name>JDBC-MySQL-Full-1</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,12 +23,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.2</version>
+            <version>21</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17.0.2</version>
+            <version>21</version>
         </dependency>
 
         <dependency>
@@ -62,10 +62,9 @@
                 <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.jdbcmysqlfull/com.example.jdbcmysqlfull.HelloApplication</mainClass>
+                            <mainClass>com.example.jdbcmysqlfull/com.example.jdbcmysqlfull1.MainApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

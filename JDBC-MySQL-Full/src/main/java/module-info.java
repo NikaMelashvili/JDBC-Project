@@ -1,9 +1,9 @@
-module com.example.JDBCMySQLFull {
+module com.example.jdbcmysqlfull1 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
-    requires java.datatransfer;
 
-    opens com.example.jdbcmysqlfull to javafx.fxml;
-    exports com.example.jdbcmysqlfull;
+
+    opens com.example.jdbcmysqlfull1 to javafx.fxml;
+    exports com.example.jdbcmysqlfull1;
 }
