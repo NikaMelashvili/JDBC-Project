@@ -41,6 +41,7 @@ public class Database {
                     case "INT":
                         dataTypesSql.add("INT");
                         createQuery.append(dataTypes.get(i));
+                        break;
                     case "DATE":
                         dataTypesSql.add("DATE");
                         createQuery.append(dataTypes.get(i));
