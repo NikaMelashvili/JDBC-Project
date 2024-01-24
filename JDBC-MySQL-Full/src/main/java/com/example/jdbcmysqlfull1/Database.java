@@ -20,6 +20,7 @@ public class Database {
     }
     String userTableName;
     ObservableList<String> dataTypesSql = FXCollections.observableArrayList();
+    ObservableList<String> columnProperties = FXCollections.observableArrayList();
     public Connection getConnection() throws SQLException {
         String dbUrl = url;
         String username = user;
@@ -28,7 +29,9 @@ public class Database {
     }
     public void createTable(String tableName, String[] cols, ObservableList<String> dataTypes) {
         userTableName = tableName;
-        try (Connection connection = getConnection()) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
             String useDb = "USE mydb";
             try (PreparedStatement usePrepStatement = connection.prepareStatement(useDb)) {
                 usePrepStatement.execute();
@@ -36,6 +39,7 @@ public class Database {
             StringBuilder createQuery = new StringBuilder("CREATE TABLE " + tableName + " (");
 
             for (int i = 0; i < cols.length; i++) {
+                columnProperties.add(cols[i]);
                 createQuery.append(cols[i] + " ");
                 switch (dataTypes.get(i)) {
                     case "INT":
@@ -52,7 +56,7 @@ public class Database {
                         break;
                     case "DECIMAL":
                         dataTypesSql.add("DECIMAL");
-                        createQuery.append(dataTypes.get(i) + "(10, 10)");
+                        createQuery.append(dataTypes.get(i) + "(7, 3)");
                         break;
                     default:
                         System.out.println("Invalid data type " + dataTypes.get(i));
@@ -72,26 +76,33 @@ public class Database {
             }
         } catch (SQLException e) {
             System.err.println("Database connection error: " + e.getMessage());
+        } finally {
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error closing the connection: " + ex.getMessage());
+            }
         }
     }
-
     public void addRow(List<StringProperty> textProperties) throws SQLException {
         Connection connection = getConnection();
         StringBuilder createQuery = new StringBuilder("INSERT INTO " + userTableName + " (");
 
-        for (int i = 0; i < dataTypesSql.size(); i++) {
-            createQuery.append(dataTypesSql.get(i));
+        for (int i = 0; i < columnProperties.size(); i++) {
+            createQuery.append(columnProperties.get(i));
 
-            if (i < dataTypesSql.size() - 1) {
+            if (i < columnProperties.size() - 1) {
                 createQuery.append(", ");
             }
         }
         createQuery.append(") VALUES (");
 
-        for (int i = 0; i < dataTypesSql.size(); i++) {
+        for (int i = 0; i < columnProperties.size(); i++) {
             createQuery.append("?");
 
-            if (i < dataTypesSql.size() - 1) {
+            if (i < columnProperties.size() - 1) {
                 createQuery.append(", ");
             }
         }
@@ -105,17 +116,25 @@ public class Database {
                 String columnType = dataTypesSql.get(i);
 
                 if ("INT".equals(columnType)) {
-                    int value = Integer.parseInt(textProperties.get(i).get());
-                    preparedStatement.setInt(i + 1, value);
-                } else if ("STRING".equals(columnType) || "DATE".equals(columnType)) {
                     String value = textProperties.get(i).get();
-                    preparedStatement.setString(i + 1, value);
+                    if (value == null || value.isEmpty()) {
+                        preparedStatement.setNull(i + 1, Types.INTEGER);
+                    } else {
+                        int intValue = Integer.parseInt(value);
+                        preparedStatement.setInt(i + 1, intValue);
+                    }
+                } else if (("VARCHAR".equals(columnType)) || ("DATE".equals(columnType))) {
+                    preparedStatement.setString(i + 1, textProperties.get(i).get());
                 } else if ("DECIMAL".equals(columnType)) {
-                    double value = Double.parseDouble(textProperties.get(i).get());
-                    preparedStatement.setDouble(i + 1, value);
+                    String value = textProperties.get(i).get();
+                    if (value == null || value.isEmpty()) {
+                        preparedStatement.setNull(i + 1, Types.DECIMAL);
+                    } else {
+                        double doubleValue = Double.parseDouble(value);
+                        preparedStatement.setDouble(i + 1, doubleValue);
+                    }
                 }
             }
-
             preparedStatement.executeUpdate();
             System.out.println("Row has been inserted successfully");
         } catch (SQLException e) {

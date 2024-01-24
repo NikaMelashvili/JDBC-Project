@@ -63,6 +63,7 @@ public class MainController {
             layout.getChildren().addAll(colNum, columnNum, comboBox);
 
             int finalI = i;
+
             columnNum.textProperty().addListener((observable, oldValue, newValue) -> {
                 cols[finalI] = newValue;
             });
